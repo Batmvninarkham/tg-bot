@@ -1,40 +1,26 @@
-#include "tgbot/types/InputFile.h"
-#include "tgbot/types/Message.h"
-#include <ostream>
-#include<stdlib.h>
-#include<tgbot/net/TgLongPoll.h>
+#include <cstdlib>
 #include<tgbot/Bot.h>
-#include<iostream>
+#include<tgbot/Api.h>
+#include<string>
+#include<stdio.h>
+#include<tgbot/net/TgLongPoll.h>
 using namespace TgBot;
-#include <chrono>
-int main (){
-  std:: string token(getenv("TOKEN"));
-Bot bot(token);
-
-
- bot.getEvents().onCommand("start",[&bot](Message::Ptr message){
-     std::cerr <<"callback entered..\n"<< std::flush;
-     
-auto start = std::chrono::steady_clock::now();
-bot.getApi().sendMessage(message -> chat->id,"Hi am four");
-auto end = std::chrono::steady_clock::now();
-std::cerr
-    << "sendMessage took "
-    << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-    << " ms\n";
-});
-
-
-const std::string filePath="/home/hades/tgbot/bot/reze.png";
-const std::string fileType="image/jpeg";
-bot.getEvents().onCommand("photo",[&bot,&filePath,&fileType](Message::Ptr message ){
-bot.getApi().sendPhoto(message->chat->id,InputFile::fromFile( filePath, fileType));
+int main(){
+  std::string token (getenv("TOKEN"));
+  TgBot::Bot bot (token);
+ const  Api& api=bot.getApi();
+bot.getEvents().onCommand("start",[&api](Message::Ptr message){
+ auto me =api.getMe();
+ api.sendMessage(message->chat->id,"hi am "+me->username );
+ });
+bot .getEvents().onAnyMessage([&api](Message::Ptr message){
+    api.sendMessage(message->chat->id,"mesage-id "+std::to_string(message->messageId));
+    api.sendMessage(message->chat->id,"chat-id "+std::to_string(message->chat->id));
     });
 TgLongPoll longpoll(bot);
 while(true){
-  std::cerr << "waiting for updates\n";
 longpoll.start();
-std::cerr<<"longpoll start returned\n";
 }
-return 0;
 }
+
+
