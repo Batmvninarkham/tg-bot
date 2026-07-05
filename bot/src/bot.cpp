@@ -9,6 +9,7 @@
 #include<stdio.h>
 #include <iostream>
 #include<tgbot/net/TgLongPoll.h>
+#include <vector>
 using namespace TgBot;
 int main(){
   std::string token (getenv("TOKEN"));
@@ -16,7 +17,8 @@ int main(){
  const  Api& api=bot.getApi();
  EventBroadcaster& event=bot.getEvents();
  const std::string admin(getenv("chat"));
-
+const std::vector<std::string>options={"yes","no","idk"};
+const std:: string question ="you good? ";
 
 bot.getEvents().onCommand("start",[&api](Message::Ptr message){
  auto me =api.getMe();
@@ -36,6 +38,11 @@ event.onCommand("sendphoto",[&api,admin](Message::Ptr message){
    Message::Ptr  sentmessage=api.sendPhoto(admin, "AgACAgQAAxkDAAMrakZXo2IfINP7rAR-dB7EzsCQSygAAuYOaxvhyjFSLA99TY1TF_MBAAMCAAN3AAM8BA" ); 
 std::cout<<"photo-id: "<<sentmessage->photo.back()->fileId<<std::endl;
     });
+
+event.onCommand("poll",[&api,&question,&options](Message::Ptr message){
+api.sendPoll(message->chat->id,question,options);
+    });
+event.onCommand("rolladice")
 try{
 TgLongPoll longpoll(bot);
 while(true){
