@@ -1,3 +1,7 @@
+#include "tgbot/EventBroadcaster.h"
+#include "tgbot/TgException.h"
+#include "tgbot/types/InputFile.h"
+#include "tgbot/types/Message.h"
 #include <cstdlib>
 #include<tgbot/Bot.h>
 #include<tgbot/Api.h>
@@ -10,6 +14,10 @@ int main(){
   std::string token (getenv("TOKEN"));
   TgBot::Bot bot (token);
  const  Api& api=bot.getApi();
+ EventBroadcaster& event=bot.getEvents();
+ const std::string admin(getenv("chat"));
+
+
 bot.getEvents().onCommand("start",[&api](Message::Ptr message){
  auto me =api.getMe();
  api.sendMessage(message->chat->id,"hi am "+me->username );
@@ -23,10 +31,18 @@ bot .getEvents().onAnyMessage([&api](Message::Ptr message){
     api.forwardMessage(getenv("chat"),message->chat->id,message->messageId,true,true);
    
     });
+event.onCommand("sendphoto",[&api,admin](Message::Ptr message){
+   auto pic = InputFile::fromFile("/home/hades/tgbot/bot/reze.png","image/png");
+   Message::Ptr  sentmessage=api.sendPhoto(admin, "AgACAgQAAxkDAAMrakZXo2IfINP7rAR-dB7EzsCQSygAAuYOaxvhyjFSLA99TY1TF_MBAAMCAAN3AAM8BA" ); 
+std::cout<<"photo-id: "<<sentmessage->photo.back()->fileId<<std::endl;
+    });
+try{
 TgLongPoll longpoll(bot);
 while(true){
 longpoll.start();
 }
+}catch(TgException& e){
+  std::cerr<<e.what()<<std::endl;
 }
-
+}
 
