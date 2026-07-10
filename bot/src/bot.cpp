@@ -2,6 +2,8 @@
 #include "tgbot/TgException.h"
 #include "tgbot/types/InputFile.h"
 #include "tgbot/types/Message.h"
+#include "tgbot/types/UserProfilePhotos.h"
+#include <cstdint>
 #include <cstdlib>
 #include<tgbot/Bot.h>
 #include<tgbot/Api.h>
@@ -45,6 +47,13 @@ api.sendPoll(message->chat->id,question,options);
     });
 event.onCommand("rolladice",[&api](Message::Ptr message){
 api.sendDice(message->chat->id,false,nullptr,nullptr, "🎳");
+    });
+//get userprofile
+event.onCommand("profile",[&api](Message::Ptr message){
+auto pic=api.getUserProfilePhotos(message->from->id);
+auto id=pic->photos[0].back();
+api.sendPhoto(message->chat->id,id->fileId);
+api.sendChatAction(message->chat->id,"upload_photo");
     });
 try{
 TgLongPoll longpoll(bot);
