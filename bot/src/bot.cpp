@@ -36,13 +36,16 @@ bot .getEvents().onAnyMessage([&api](Message::Ptr message){
 event.onCommand("sendphoto",[&api,admin](Message::Ptr message){
    auto pic = InputFile::fromFile("/home/hades/tgbot/bot/reze.png","image/png");
    Message::Ptr  sentmessage=api.sendPhoto(admin, "AgACAgQAAxkDAAMrakZXo2IfINP7rAR-dB7EzsCQSygAAuYOaxvhyjFSLA99TY1TF_MBAAMCAAN3AAM8BA" ); 
+   api.sendChatAction(message->chat->id,"upload_photo");
 std::cout<<"photo-id: "<<sentmessage->photo.back()->fileId<<std::endl;
     });
 
 event.onCommand("poll",[&api,&question,&options](Message::Ptr message){
 api.sendPoll(message->chat->id,question,options);
     });
-event.onCommand("rolladice")
+event.onCommand("rolladice",[&api](Message::Ptr message){
+api.sendDice(message->chat->id,false,nullptr,nullptr, "🎳");
+    });
 try{
 TgLongPoll longpoll(bot);
 while(true){
