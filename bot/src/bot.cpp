@@ -21,7 +21,7 @@ int main(){
  const std::string admin(getenv("chat"));
 const std::vector<std::string>options={"yes","no","idk"};
 const std:: string question ="you good? ";
-
+std:: int64_t poll_id=0;
 bot.getEvents().onCommand("start",[&api](Message::Ptr message){
  auto me =api.getMe();
  api.sendMessage(message->chat->id,"hi am "+me->username );
@@ -32,9 +32,13 @@ bot .getEvents().onAnyMessage([&api](Message::Ptr message){
 */
     std::cout<<"chat-id "<<message->chat->id<<std::endl;
     std::  cout<<"user-id "<<message->from->id<<std::endl;
-    api.forwardMessage(getenv("chat"),message->chat->id,message->messageId,true,true);
-   
+  api.forwardMessage(getenv("chat"),message->chat->id,message->messageId,true,true);
+ 
     });
+event.onCommand("stop_poll",[&api,&poll_id](Message::Ptr message){
+api.stopPoll(message->chat->id,poll_id);
+    });
+
 event.onCommand("sendphoto",[&api,admin](Message::Ptr message){
    auto pic = InputFile::fromFile("/home/hades/tgbot/bot/reze.png","image/png");
    Message::Ptr  sentmessage=api.sendPhoto(admin, "AgACAgQAAxkDAAMrakZXo2IfINP7rAR-dB7EzsCQSygAAuYOaxvhyjFSLA99TY1TF_MBAAMCAAN3AAM8BA" ); 
@@ -42,9 +46,10 @@ event.onCommand("sendphoto",[&api,admin](Message::Ptr message){
 std::cout<<"photo-id: "<<sentmessage->photo.back()->fileId<<std::endl;
     });
 
-event.onCommand("poll",[&api,&question,&options](Message::Ptr message){
-api.sendPoll(message->chat->id,question,options);
-    });
+event.onCommand("poll",[&api,&poll_id,&question,&options](Message::Ptr message){
+auto poll_l=api.sendPoll(message->chat->id,question,options);
+poll_id=poll_l->messageId;
+});
 event.onCommand("rolladice",[&api](Message::Ptr message){
 api.sendDice(message->chat->id,false,nullptr,nullptr, "🎳");
     });
@@ -54,6 +59,9 @@ auto pic=api.getUserProfilePhotos(message->from->id);
 auto id=pic->photos[0].back();
 api.sendPhoto(message->chat->id,id->fileId);
 api.sendChatAction(message->chat->id,"upload_photo");
+    });
+event.onUnknownCommand([&api](Message::Ptr message){
+api.sendMessage(message->chat->id,"invalid  command ");
     });
 try{
 TgLongPoll longpoll(bot);
