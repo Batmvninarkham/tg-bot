@@ -3,6 +3,7 @@
 #include "tgbot/types/InputFile.h"
 #include "tgbot/types/Message.h"
 #include "tgbot/types/UserProfilePhotos.h"
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include<tgbot/Bot.h>
@@ -60,8 +61,14 @@ auto id=pic->photos[0].back();
 api.sendPhoto(message->chat->id,id->fileId);
 api.sendChatAction(message->chat->id,"upload_photo");
     });
-event.onUnknownCommand([&api](Message::Ptr message){
-api.sendMessage(message->chat->id,"invalid  command ");
+  event.onUnknownCommand([&api](Message::Ptr message){
+      auto reply = std::make_shared<TgBot::ReplyParameters>();
+
+    reply->messageId = message->messageId;
+
+    if(reply == nullptr) return;
+   // api.sendMessage(message->chat->id,"invalid command twin!",nullptr,reply);
+   api.sendMessage(message->chat->id, "invalid command bro ",nullptr,reply);
     });
 try{
 TgLongPoll longpoll(bot);
