@@ -2,7 +2,6 @@
 #include "tgbot/TgException.h"
 #include "tgbot/types/InputFile.h"
 #include "tgbot/types/Message.h"
-#include "tgbot/types/UserProfilePhotos.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -28,12 +27,10 @@ bot.getEvents().onCommand("start",[&api](Message::Ptr message){
  api.sendMessage(message->chat->id,"hi am "+me->username );
  });
 bot .getEvents().onAnyMessage([&api](Message::Ptr message){
- /*   api.sendMessage(message->chat->id,"mesage-id "+std::to_string(message->messageId));
-    api.sendMessage(message->chat->id,"chat-id "+std::to_string(message->chat->id));
-*/
-    std::cout<<"chat-id "<<message->chat->id<<std::endl;
+
+   std::cout<<"chat-id "<<message->chat->id<<std::endl;
     std::  cout<<"user-id "<<message->from->id<<std::endl;
-  api.forwardMessage(getenv("chat"),message->chat->id,message->messageId,true,true);
+ api.forwardMessage(getenv("chat"),message->chat->id,message->messageId,true,true);
  
     });
 event.onCommand("stop_poll",[&api,&poll_id](Message::Ptr message){
