@@ -5,6 +5,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <exception>
+#include <sstream>
+#include <sys/types.h>
 #include<tgbot/Bot.h>
 #include<tgbot/Api.h>
 #include<string>
@@ -40,9 +43,26 @@ std:: int64_t poll_id=0;
 std::unordered_map<int64_t, state>userstates;
 
 event.onCommand("pin",[&api,&userstates](Message::Ptr message){
-api.sendMessage(message->chat->id,"message-id? ");
-api.sendMessage(message->chat->id,std::to_string( message->messageId));
-userstates[message->chat->id]= state::WAITING_FOR_MESSAGE_ID;
+    std:: istringstream iss(message->text);
+    std:: string command;
+    std::string id_token;
+    if(!(iss >>command >> id_token )){
+    api.sendMessage(message->chat->id,"from pin cmd  messageid?");
+    api.sendMessage(message->chat->id,std::to_string( message->messageId));
+    userstates[message->chat->id]= state::WAITING_FOR_MESSAGE_ID;
+    return;
+    }    
+try{
+
+int id =std::stoi(id_token);
+bool result=api.pinChatMessage(message->chat->id,id);
+if(result!=true){
+api.sendMessage(message->chat->id,"failed to pin check if messageid is valid!<exists?> ");
+userstates[message->chat->id]=state::WAITING_FOR_MESSAGE_ID;
+}else userstates[message->chat->id]=state::IDLE;
+}catch(const std::exception&){
+api.sendMessage(message->chat->id,"invalid messageid must be a number");
+}
     });
 
 //start
@@ -62,12 +82,13 @@ bot .getEvents().onAnyMessage([&api](Message::Ptr message){
 */
 
 event.onAnyMessage([&api,&userstates](Message::Ptr message){
+if (!message->text.empty() && message->text[0] == '/') return;
 if(userstates[message->chat->id] == state::IDLE){
 return ;
 }
 if(userstates[message->chat->id]==state::WAITING_FOR_MESSAGE_ID){
 if(!isNumber(message->text)){
-api.sendMessage(message->chat->id, "invalid input ");
+api.sendMessage(message->chat->id, "message id needs to be a number! ");
 return;
 }
 
