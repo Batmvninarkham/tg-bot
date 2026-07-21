@@ -46,10 +46,13 @@ event.onCommand("pin",[&api,&userstates](Message::Ptr message){
     std:: istringstream iss(message->text);
     std:: string command;
     std::string id_token;
+    if(message->replyToMessage){
+    api.pinChatMessage(message->chat->id,message->replyToMessage->messageId);
+    return;
+    }
     if(!(iss >>command >> id_token )){
-    api.sendMessage(message->chat->id,"from pin cmd  messageid?");
+    api.sendMessage(message->chat->id,"usage: /pin <messageid>");
     api.sendMessage(message->chat->id,std::to_string( message->messageId));
-    userstates[message->chat->id]= state::WAITING_FOR_MESSAGE_ID;
     return;
     }    
 try{
@@ -57,10 +60,11 @@ try{
 int id =std::stoi(id_token);
 bool result=api.pinChatMessage(message->chat->id,id);
 if(result!=true){
+
 api.sendMessage(message->chat->id,"failed to pin check if messageid is valid!<exists?> ");
-userstates[message->chat->id]=state::WAITING_FOR_MESSAGE_ID;
-}else userstates[message->chat->id]=state::IDLE;
-}catch(const std::exception&){
+}
+}catch(const std::exception&)
+{
 api.sendMessage(message->chat->id,"invalid messageid must be a number");
 }
     });
@@ -81,22 +85,6 @@ bot .getEvents().onAnyMessage([&api](Message::Ptr message){
     });
 */
 
-event.onAnyMessage([&api,&userstates](Message::Ptr message){
-if (!message->text.empty() && message->text[0] == '/') return;
-if(userstates[message->chat->id] == state::IDLE){
-return ;
-}
-if(userstates[message->chat->id]==state::WAITING_FOR_MESSAGE_ID){
-if(!isNumber(message->text)){
-api.sendMessage(message->chat->id, "message id needs to be a number! ");
-return;
-}
-
-auto ms_id=std::stoi(message->text);
-api.pinChatMessage(message->chat->id,ms_id);
-userstates[message->chat->id]=state::IDLE;
-}
-    });
 
 
 
@@ -137,6 +125,37 @@ api.sendChatAction(message->chat->id,"upload_photo");
    // api.sendMessage(message->chat->id,"invalid command twin!",nullptr,reply);
    api.sendMessage(message->chat->id, "invalid command bro ",nullptr,reply);
     });
+
+
+event.onCommand("ban",[&api](Message::Ptr message){
+    std::istringstream iss(message->text);
+    std::string command;
+    std::string userid;
+    std::int32_t time;
+    std::string reason;
+    if(message->replyToMessage){
+     if(!(iss>>command >>time)){
+        std:: string reply=std::to_string(message->replyToMessage->from->id)+" has been banned forever";
+     api.banChatMember(message->chat->id,message->replyToMessage->from->id);
+     api.sendMessage(message->chat->id,reply);
+     }else{
+          api.banChatMember(message->chat->id,message->replyToMessage->from->id,time); 
+        std::string reply =message->replyToMessage->from->username + std::to_string(message->replyToMessage->from->id) + "banned for "+std::to_string(time);
+        api.sendMessage(message->chat->id, reply);
+        }
+    }
+    if(!(iss>>command >>userid)){
+api.sendMessage(message->chat->id,"usage: /pin <userid>[duration] ");
+    }else {
+    try{
+        int32_t uid=std::stoi(userid);
+        api.banChatMember(message->chat->id,uid);
+    }catch(std::exception&){
+api.sendMessage(message->chat->id,"must be an integer!");
+    }
+    }
+    });
+
 try{
 TgLongPoll longpoll(bot);
 while(true){
