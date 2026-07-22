@@ -1,12 +1,14 @@
 #include "tgbot/EventBroadcaster.h"
 #include "tgbot/TgException.h"
 #include "tgbot/types/Chat.h"
+#include "tgbot/types/ChatPermissions.h"
 #include "tgbot/types/InputFile.h"
 #include "tgbot/types/Message.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <memory>
 #include <ostream>
 #include <sstream>
 #include <sys/types.h>
@@ -37,6 +39,25 @@ Message::Ptr get_reply(Message::Ptr message){
   }
   return nullptr;
 }
+ChatPermissions::Ptr createPermissions(bool globalSetter){
+auto p = std::make_shared<ChatPermissions>();
+auto boo= globalSetter;
+p->canAddWebPagePreviews=boo;
+p->canChangeInfo=boo;
+p->canInviteUsers=boo;
+p->canManageTopics=boo;
+p->canPinMessages=boo;
+p->canSendMessages=boo;
+p->canSendOtherMessages=boo;
+p->canSendAudios=boo;
+p->canSendPhotos=boo;
+p->canSendDocuments=boo;
+p->canSendPolls=boo;
+p->canSendVideoNotes=boo;
+p->canSendVideos=boo;
+return p;
+}
+
 int main(){
   std::string token (getenv("TOKEN"));
   TgBot::Bot bot (token);
@@ -192,7 +213,30 @@ return;
     return;
 
     });
-
+event.onCommand("mute",[&api](Message::Ptr message){
+  auto reply=get_reply(message);
+  std::string command;
+  std:: int64_t time;
+  std::istringstream iss(message->text);
+  if(reply){
+  if(reply->from)
+  { 
+  if(!(iss>>command>>time)){
+  api.restrictChatMember(message->chat->id,reply->from->id,createPermissions(false) ,0,true);
+api.sendMessage(message->chat->id,"user: "+reply->from->username+" id["+std::to_string(reply->from->id)+"] muted indefinetly");
+return;
+}
+api.restrictChatMember(message->chat->id,reply->from->id ,createPermissions(false),time,true);
+return;
+}
+if(reply->senderChat){
+api.sendMessage(message->chat->id, "cannot mute a channel consider banning");
+return;
+}
+}
+api.sendMessage(message->chat->id, "usage:replytomessage then /mute");
+return;
+    });
 try{
 TgLongPoll longpoll(bot);
 while(true){
