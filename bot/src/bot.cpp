@@ -1,11 +1,13 @@
 #include "tgbot/EventBroadcaster.h"
 #include "tgbot/TgException.h"
+#include "tgbot/types/Chat.h"
 #include "tgbot/types/InputFile.h"
 #include "tgbot/types/Message.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <ostream>
 #include <sstream>
 #include <sys/types.h>
 #include<tgbot/Bot.h>
@@ -29,8 +31,12 @@ bool isNumber(const std::string& s)
       return !s.empty() &&
                    std::all_of(s.begin(), s.end(), ::isdigit);
 }
-
-
+Message::Ptr get_reply(Message::Ptr message){
+  if(message->replyToMessage){
+  return message->replyToMessage;
+  }
+  return nullptr;
+}
 int main(){
   std::string token (getenv("TOKEN"));
   TgBot::Bot bot (token);
@@ -42,31 +48,29 @@ const std:: string question ="you good? ";
 std:: int64_t poll_id=0;
 std::unordered_map<int64_t, state>userstates;
 
-event.onCommand("pin",[&api,&userstates](Message::Ptr message){
+event.onCommand("pin",[&api](Message::Ptr message){
     std:: istringstream iss(message->text);
     std:: string command;
-    std::string id_token;
-    if(message->replyToMessage){
-    api.pinChatMessage(message->chat->id,message->replyToMessage->messageId);
-    return;
-    }
-    if(!(iss >>command >> id_token )){
-    api.sendMessage(message->chat->id,"usage: /pin <messageid>");
-    api.sendMessage(message->chat->id,std::to_string( message->messageId));
-    return;
-    }    
-try{
-
-int id =std::stoi(id_token);
-bool result=api.pinChatMessage(message->chat->id,id);
-if(result!=true){
-
-api.sendMessage(message->chat->id,"failed to pin check if messageid is valid!<exists?> ");
-}
-}catch(const std::exception&)
-{
-api.sendMessage(message->chat->id,"invalid messageid must be a number");
-}
+    std::int64_t id_token;
+    auto isreply=get_reply(message);
+    if (isreply){
+     api.pinChatMessage(message->chat->id, isreply->messageId);     
+     return;
+    } 
+      if(!(iss>>command>>id_token)){
+      api.sendMessage(message->chat->id, "usage:/pin <messageid>");
+      return;
+      }
+      try{
+      std::cerr
+          << "command = [" << command << "]\n"
+              << "id_token = " << id_token << '\n';
+      api.pinChatMessage(message->chat->id, id_token);
+       return;
+      }catch(const std:: exception& e){  
+      api.sendMessage(message->chat->id, e.what());
+      return;
+      }
     });
 
 //start
