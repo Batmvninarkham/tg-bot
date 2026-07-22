@@ -51,6 +51,7 @@ std::unordered_map<int64_t, state>userstates;
 event.onCommand("pin",[&api](Message::Ptr message){
     std:: istringstream iss(message->text);
     std:: string command;
+    std::cerr<<message->chat->id;
     std::int64_t id_token;
     auto isreply=get_reply(message);
     if (isreply){
@@ -62,13 +63,11 @@ event.onCommand("pin",[&api](Message::Ptr message){
       return;
       }
       try{
-      std::cerr
-          << "command = [" << command << "]\n"
-              << "id_token = " << id_token << '\n';
       api.pinChatMessage(message->chat->id, id_token);
+      
        return;
       }catch(const std:: exception& e){  
-      api.sendMessage(message->chat->id, e.what());
+      std:: cout<< e.what();
       return;
       }
     });
@@ -111,7 +110,8 @@ poll_id=poll_l->messageId;
 });
 //roll a dice
 event.onCommand("rolladice",[&api](Message::Ptr message){
-api.sendDice(message->chat->id,false,nullptr,nullptr, "🎳");
+auto result=api.sendDice(message->chat->id,false,nullptr,nullptr, "🎰");
+api.sendMessage(message->chat->id,std::to_string( result->dice->value));
     });
 //get userprofile
 event.onCommand("profile",[&api](Message::Ptr message){
