@@ -137,48 +137,36 @@ event.onCommand("ban",[&api](Message::Ptr message){
     std::string userid;
     std::int32_t time;
     std::string reason;
-    if(message->replyToMessage->from){
-     if(!(iss>>command >>time)){
-        std:: string reply=std::to_string(message->replyToMessage->from->id)+" has been banned forever";
-     api.banChatMember(message->chat->id,message->replyToMessage->from->id);
-     api.sendMessage(message->chat->id,reply);
-     }else{
-          api.banChatMember(message->chat->id,message->replyToMessage->from->id,time); 
-        std::string reply =message->replyToMessage->from->username + std::to_string(message->replyToMessage->from->id) + "banned for "+std::to_string(time);
-        api.sendMessage(message->chat->id, reply);
-        }
-        if((iss>>reason)){
-        api.sendMessage(message->chat->id, reason);
-        }
-        return;
+    auto mess=message->chat;
+    auto reply= get_reply(message);   
+    std::string why="";
+    if(reply){
+    if(reply->from){
+    if(!(iss>>command>>time)){
+    api.banChatMember(mess->id, reply->from->id);
+    api.sendMessage(mess->id,"user: "+reply->from->username+std::to_string(reply->from->id)+"has been banned forever" );
+    return;
     }
-    if(message->replyToMessage->senderChat){
-  
-     if(!(iss>>command >>time)){
-     api.banChatMember(message->chat->id,message->replyToMessage->senderChat->id);
-     std:: string reply=std::to_string(message->replyToMessage->senderChat->id)+" has been banned forever";
-     api.sendMessage(message->chat->id,reply);
-     }else{
-          api.banChatMember(message->chat->id,message->replyToMessage->senderChat->id,time); 
-        std::string reply =message->replyToMessage->senderChat->username + std::to_string(message->replyToMessage->senderChat->id) + "banned for "+std::to_string(time);
-        api.sendMessage(message->chat->id, reply);
-        }
-        if((iss>>reason)){
-        api.sendMessage(message->chat->id, reason);
-        }
-        return;
+    api.banChatMember(mess->id, reply->from->id,time);
+    if(iss>>reason){
+      why="reason = "+reason;
     }
-    if(!(iss>>command >>userid)){
-api.sendMessage(message->chat->id,"usage: /pin <userid>[duration] ");
-    }else {
-    try{
-        
-        int32_t uid=std::stoi(userid);
-        api.banChatMember(message->chat->id,uid);
-    }catch(std::exception&){
-api.sendMessage(message->chat->id,"must be an integer!");
+    api.sendMessage(mess->id,"user: "+reply->from->username+std::to_string(reply->from->id)+"has been banned for <"+std::to_string(time)+">" +why);
+    return;
+    } 
+    if(reply->senderChat){
+    api.banChatSenderChat(mess->id, reply->senderChat->id);
+    if(iss>>reason){
+      why="reason = "+reason;
+    }
+    api.sendMessage(mess->id,"channel chat: "+reply->senderChat->username+" <"+std::to_string(reply->senderChat->id)+"> banned implicit unban required "+why );
+    return;
+    
     }
     }
+    //*********later support inputing username to ban *************
+    api.sendMessage(mess->id, "usage: replytomessage -> /ban");
+    return;
     });
 
 try{
