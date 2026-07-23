@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <iterator>
 #include <memory>
 #include <ostream>
 #include <sstream>
@@ -64,7 +65,7 @@ int main(){
  const  Api& api=bot.getApi();
  EventBroadcaster& event=bot.getEvents();
 // const std::string admin(getenv("chat"));
-const std::vector<std::string>options={"yes","no","idk"};
+
 const std:: string question ="you good? ";
 std:: int64_t poll_id=0;
 std::unordered_map<int64_t, state>userstates;
@@ -124,16 +125,28 @@ event.onCommand("sendphoto",[&api,admin](Message::Ptr message){
    Message::Ptr  sentmessage=api.sendPhoto(admin, "AgACAgQAAxkDAAMrakZXo2IfINP7rAR-dB7EzsCQSygAAuYOaxvhyjFSLA99TY1TF_MBAAMCAAN3AAM8BA" ); 
    api.sendChatAction(message->chat->id,"upload_photo");
     });*/
-//poll
-event.onCommand("poll",[&api,&poll_id,&question,&options](Message::Ptr message){
-auto poll_l=api.sendPoll(message->chat->id,question,options);
-poll_id=poll_l->messageId;
-});
 //roll a dice
-event.onCommand("rolladice",[&api](Message::Ptr message){
-auto result=api.sendDice(message->chat->id,false,nullptr,nullptr, "🎰");
-api.sendMessage(message->chat->id,std::to_string( result->dice->value));
-    });
+event.onCommand("dice",[&api](Message::Ptr message){
+    std:: string emoji;
+    std:: string command;
+    std::istringstream iss(message->text);
+   const  std::vector<std::string>emojis={"🎲","🎯", "🏀", "⚽", "🎳", "🎰"};
+    if(iss>>command>>emoji){
+if(emoji=="dice"){ emoji= emojis[0];
+}else if(emoji =="dart") emoji=emojis[1];
+else if(emoji =="basketball") emoji=emojis[2];
+else if(emoji =="football") emoji=emojis[3];
+else if(emoji =="bowlball")  emoji=emojis[4];
+else if(emoji =="slotmachine") emoji=emojis[5];
+auto result=api.sendDice(message->chat->id,false,nullptr,nullptr, emoji);
+//api.sendMessage(message->chat->id,std::to_string( result->dice->value));
+return;
+}
+emoji=emojis[0];
+api.sendDice(message->chat->id,false, nullptr, nullptr,emoji);
+return;
+});
+
 //get userprofile
 event.onCommand("profile",[&api](Message::Ptr message){
 auto pic=api.getUserProfilePhotos(message->from->id);
