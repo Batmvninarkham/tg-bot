@@ -253,6 +253,35 @@ return;
 api.sendMessage(message->chat->id, "usage:replytomessage then /mute");
 return;
     });
+
+event.onCommand("leave",[&api](Message::Ptr message){
+api.leaveChat(message->chat->id);
+    });
+
+event.onCommand("unmute",[&api](Message::Ptr message){
+auto result= api.getChat(message->chat->id);
+auto reply=get_reply(message);
+ std::istringstream iss(message->text);
+ std:: string command;
+ std:: int64_t time;
+if(reply->from){
+if(!(iss>>command>>time)){
+api.restrictChatMember(message->chat->id,reply->from->id, result->permissions);
+api.sendMessage(message->chat->id, "user "+std::to_string(reply->from->id)+" "+reply->from->username+" unmuted ");
+return;
+}
+api.restrictChatMember(message->chat->id, reply->from->id, result->permissions,time);
+api.sendMessage(message->chat->id, "user: "+std::to_string(reply->from->id)+" "+reply->from->username+" banned for <"+std::to_string(time)+">");
+return;
+}
+//later add a database to do lookups so we can ban by username :)
+api.sendMessage(message->chat->id, "usage:reply to user -> /unmute ");
+    });
+
+
+
+//***********webapp intergration checkpoint********************
+
 auto app=std::make_shared<WebAppInfo>();
 app->url="https://hades-ashy.vercel.app";
 auto button= std::make_shared<InlineKeyboardButton>();
