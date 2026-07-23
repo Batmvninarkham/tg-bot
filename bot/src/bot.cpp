@@ -1,8 +1,13 @@
 #include "tgbot/EventBroadcaster.h"
 #include "tgbot/TgException.h"
+#include "tgbot/tools/StringTools.h"
+#include "tgbot/types/CallbackQuery.h"
 #include "tgbot/types/Chat.h"
 #include "tgbot/types/ChatPermissions.h"
+#include "tgbot/types/InlineKeyboardButton.h"
+#include "tgbot/types/InlineKeyboardMarkup.h"
 #include "tgbot/types/Message.h"
+#include "tgbot/types/WebAppInfo.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -248,6 +253,21 @@ return;
 api.sendMessage(message->chat->id, "usage:replytomessage then /mute");
 return;
     });
+auto app=std::make_shared<WebAppInfo>();
+app->url="https://hades-ashy.vercel.app";
+auto button= std::make_shared<InlineKeyboardButton>();
+button->text="streamctl";
+button->webApp=app;
+auto markup= std::make_shared<InlineKeyboardMarkup>();
+markup->inlineKeyboard.push_back({button});
+
+event.onCommand("streamctl",[&api,&markup](Message::Ptr message){
+api.sendMessage(message->chat->id, "launch the streamctl webapp to watch your games <author batmvn>",nullptr,nullptr,markup,"Markdown");
+return;   
+});
+
+
+
 try{
 TgLongPoll longpoll(bot);
 while(true){
