@@ -2,13 +2,11 @@
 #include "tgbot/TgException.h"
 #include "tgbot/types/Chat.h"
 #include "tgbot/types/ChatPermissions.h"
-#include "tgbot/types/InputFile.h"
 #include "tgbot/types/Message.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
-#include <iterator>
 #include <memory>
 #include <ostream>
 #include <sstream>
