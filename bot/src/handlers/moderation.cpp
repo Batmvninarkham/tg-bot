@@ -4,7 +4,8 @@
 #include <iostream>
 #include "../utils/message_util.h"
 #include "tgbot/types/ChatPermissions.h"
-
+#include  "../utils/permissions.h"
+#include "tgbot/types/Message.h"
 TgBot::ChatPermissions::Ptr createPermissions(bool globalSetter){
 auto p = std::make_shared<TgBot::ChatPermissions>();
 auto boo= globalSetter;
@@ -28,11 +29,6 @@ void registerModerationHandlers(TgBot::Bot& bot){
  TgBot::EventBroadcaster& event= bot.getEvents();
 const TgBot::Api& api = bot.getApi();
 using namespace TgBot;
-
-
-
-
-
 
 
 
