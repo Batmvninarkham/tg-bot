@@ -33,6 +33,9 @@ using namespace TgBot;
 
 
 event.onCommand("pin",[&api](Message::Ptr message){
+    if(!isAdmin(api, message)){
+    return;
+    }
     std:: istringstream iss(message->text);
     std:: string command;
     std::cerr<<message->chat->id;

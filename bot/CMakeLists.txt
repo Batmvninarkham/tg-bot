@@ -14,6 +14,7 @@ add_executable(bot
         src/handlers/moderation.cpp
         src/handlers/owner.cpp
         src/utils/message_util.cpp
+        src/utils/permissions.cpp
     )
 
     target_include_directories(bot PRIVATE

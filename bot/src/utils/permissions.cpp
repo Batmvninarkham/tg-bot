@@ -4,9 +4,9 @@
 #include <unordered_set>
 #include "tgbot/Api.h"
 #include "tgbot/types/Message.h"
-bool isAdmin(TgBot::Api& api,TgBot::Message::Ptr message){
+bool isAdmin(const TgBot::Api& api,TgBot::Message::Ptr message){
 auto admin= getenv("chat");
-std::unordered_set<int64_t>admins={std::stoi(admin)};
+std::unordered_set<int64_t>admins={std::stoll(admin)};
 if(admins.find(message->from->id)!= admins.end()){
 
 return true;

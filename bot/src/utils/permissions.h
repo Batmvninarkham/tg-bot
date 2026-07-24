@@ -1,6 +1,6 @@
 #pragma once
-
+#include "tgbot/Api.h"
 #include <cstdint>
-bool isMod(int64_t userid);
-bool isAdmin(int64_t userid);
-bool isOwner(int64_t userid);
+bool isMod(const TgBot::Api& api, TgBot::Message::Ptr message);
+bool isAdmin(const TgBot::Api& api, TgBot::Message::Ptr message);
+bool isOwner(const TgBot::Api& api, TgBot::Message::Ptr message);
