@@ -7,6 +7,23 @@ const  TgBot::Api& api =bot.getApi();
 TgBot::EventBroadcaster& event=bot.getEvents();
 
 
+
+//***********webapp intergration checkpoint********************
+
+auto app=std::make_shared<TgBot::WebAppInfo>();
+app->url="https://hades-ashy.vercel.app";
+auto button= std::make_shared<TgBot::InlineKeyboardButton>();
+button->text="streamctl";
+button->webApp=app;
+auto markup= std::make_shared<TgBot::InlineKeyboardMarkup>();
+markup->inlineKeyboard.push_back({button});
+
+event.onCommand("streamctl",[&api,&markup](TgBot::Message::Ptr message){
+api.sendMessage(message->chat->id, "launch the streamctl webapp to watch your games <author batmvn>",nullptr,nullptr,markup,"Markdown");
+return;   
+});
+
+
 event.onCommand("dice",[&api](TgBot::Message::Ptr message){
     std:: string emoji;
     std:: string command;

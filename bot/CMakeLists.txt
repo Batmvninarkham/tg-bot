@@ -10,6 +10,10 @@ add_subdirectory(../tgbot-cpp-master tgbot-build)
 
 add_executable(bot
         src/bot.cpp
+        src/handlers/general.cpp
+        src/handlers/moderation.cpp
+        src/handlers/owner.cpp
+        src/utils/message_util.cpp
     )
 
     target_include_directories(bot PRIVATE

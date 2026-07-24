@@ -1,40 +1,22 @@
-#include "tgbot/EventBroadcaster.h"
 #include "tgbot/TgException.h"
-#include "tgbot/types/Chat.h"
-#include "tgbot/types/ChatPermissions.h"
-#include "tgbot/types/InlineKeyboardButton.h"
-#include "tgbot/types/InlineKeyboardMarkup.h"
-#include "tgbot/types/Message.h"
-#include "tgbot/types/WebAppInfo.h"
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <exception>
-#include <memory>
-#include <ostream>
-#include <sstream>
-#include <sys/types.h>
 #include<tgbot/Bot.h>
-#include<tgbot/Api.h>
 #include<string>
 #include<stdio.h>
 #include <iostream>
 #include<tgbot/net/TgLongPoll.h>
-#include <unordered_map>
-#include <vector>
+#include "./handlers/moderation.h"
+#include "./handlers/owner.h"
+#include "./handlers/general.h"
+
 using namespace TgBot;
 
 
 int main(){
   std::string token (getenv("TOKEN"));
   TgBot::Bot bot (token);
-  //****rewrite
- const  Api& api=bot.getApi();
- EventBroadcaster& event=bot.getEvents();
-// const std::string admin(getenv("chat"));
-
-
-
+registerGeneralHandlers(bot);
+registerModerationHandlers(bot);
+registerOwnerHandlers(bot);
 /*
 //grab all messages to the bot 
 bot .getEvents().onAnyMessage([&api](Message::Ptr message){
@@ -59,27 +41,6 @@ event.onCommand("sendphoto",[&api,admin](Message::Ptr message){
    api.sendChatAction(message->chat->id,"upload_photo");
     });*/
 
-
-event.onCommand("leave",[&api](Message::Ptr message){
-api.leaveChat(message->chat->id);
-    });
-
-
-
-//***********webapp intergration checkpoint********************
-
-auto app=std::make_shared<WebAppInfo>();
-app->url="https://hades-ashy.vercel.app";
-auto button= std::make_shared<InlineKeyboardButton>();
-button->text="streamctl";
-button->webApp=app;
-auto markup= std::make_shared<InlineKeyboardMarkup>();
-markup->inlineKeyboard.push_back({button});
-
-event.onCommand("streamctl",[&api,&markup](Message::Ptr message){
-api.sendMessage(message->chat->id, "launch the streamctl webapp to watch your games <author batmvn>",nullptr,nullptr,markup,"Markdown");
-return;   
-});
 
 
 
