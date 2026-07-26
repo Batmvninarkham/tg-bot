@@ -61,6 +61,10 @@ return;
     });
 
 event.onCommand("ban",[&api](Message::Ptr message){
+
+    if(!isMod(api, message)){
+return;
+    }
     std::istringstream iss(message->text);
     std::string command;
     std::string userid;
@@ -99,6 +103,9 @@ event.onCommand("ban",[&api](Message::Ptr message){
     });
 
 event.onCommand("unbanChat",[&api](Message::Ptr message){
+    if(!isMod(api, message)){
+return;
+    }
 auto reply=get_reply(message);
     auto mess=message->chat;
 if(reply){
@@ -110,6 +117,9 @@ api.sendMessage(mess->id, reply->senderChat->username+std::to_string(reply->send
   
     });
 event.onCommand("unbanUser",[&api](Message::Ptr message){
+    if(!isMod(api, message)){
+return;
+    }
 auto reply = get_reply(message);
 if(reply){
 api.unbanChatMember(message->chat->id, reply->from->id);
@@ -122,6 +132,9 @@ return;
 
     });
 event.onCommand("mute",[&api](Message::Ptr message){
+    if(!isMod(api, message)){
+return;
+    }
   auto reply=get_reply(message);
   std::string command;
   std:: int64_t time;
@@ -148,6 +161,9 @@ return;
 
 
 event.onCommand("unmute",[&api](Message::Ptr message){
+    if(!isMod(api, message)){
+return;
+    }
 auto result= api.getChat(message->chat->id);
 auto reply=get_reply(message);
  std::istringstream iss(message->text);
