@@ -102,35 +102,26 @@ return;
     return;
     });
 
-event.onCommand("unbanChat",[&api](Message::Ptr message){
+event.onCommand("unban",[&api](Message::Ptr message){
     if(!isMod(api, message)){
 return;
     }
 auto reply=get_reply(message);
     auto mess=message->chat;
-if(reply){
+if(reply->senderChat){
 api.unbanChatSenderChat(mess->id, reply->senderChat->id);
 api.sendMessage(mess->id, reply->senderChat->username+std::to_string(reply->senderChat->id)+" unbanned");
-}
-    api.sendMessage(mess->id, "usage: replytomessage -> /unbanChat");
-    return;
-  
-    });
-event.onCommand("unbanUser",[&api](Message::Ptr message){
-    if(!isMod(api, message)){
 return;
-    }
-auto reply = get_reply(message);
-if(reply){
+}if(reply->from){
+
 api.unbanChatMember(message->chat->id, reply->from->id);
 
 api.sendMessage(message->chat->id, reply->from->username+std::to_string(reply->from->id)+" unbanned");
 return;
 }
-    api.sendMessage(message->chat->id, "usage: replytomessage -> /unbanUser");
+    api.sendMessage(mess->id, "usage: replytomessage -> /unban");
     return;
-
-    });
+   });
 event.onCommand("mute",[&api](Message::Ptr message){
     if(!isMod(api, message)){
 return;

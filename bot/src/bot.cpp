@@ -7,7 +7,7 @@
 #include "./handlers/moderation.h"
 #include "./handlers/owner.h"
 #include "./handlers/general.h"
-
+#include "./commands/register.h"
 using namespace TgBot;
 
 
@@ -17,6 +17,7 @@ int main(){
 registerGeneralHandlers(bot);
 registerModerationHandlers(bot);
 registerOwnerHandlers(bot);
+registerAllCommands(bot);
 /*
 //grab all messages to the bot 
 bot .getEvents().onAnyMessage([&api](Message::Ptr message){

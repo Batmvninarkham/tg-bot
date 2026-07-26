@@ -10,6 +10,8 @@ TgBot::EventBroadcaster& event=bot.getEvents();
 
 //***********webapp intergration checkpoint********************
 
+
+event.onCommand("streamctl",[&api](TgBot::Message::Ptr message){
 auto app=std::make_shared<TgBot::WebAppInfo>();
 app->url="https://hades-ashy.vercel.app";
 auto button= std::make_shared<TgBot::InlineKeyboardButton>();
@@ -17,8 +19,6 @@ button->text="streamctl";
 button->webApp=app;
 auto markup= std::make_shared<TgBot::InlineKeyboardMarkup>();
 markup->inlineKeyboard.push_back({button});
-
-event.onCommand("streamctl",[&api,&markup](TgBot::Message::Ptr message){
 api.sendMessage(message->chat->id, "launch the streamctl webapp to watch your games <author batmvn>",nullptr,nullptr,markup,"Markdown");
 return;   
 });
@@ -47,7 +47,8 @@ return;
 
 
 event.onCommand("profile",[&api](TgBot::Message::Ptr message){
-auto pic=api.getUserProfilePhotos(message->from->id);
+    if(!message->replyToMessage) return;
+auto pic=api.getUserProfilePhotos(message->replyToMessage->from->id);
 auto id=pic->photos[0].back();
 api.sendPhoto(message->chat->id,id->fileId);
 api.sendChatAction(message->chat->id,"upload_photo");
