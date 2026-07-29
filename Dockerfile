@@ -6,7 +6,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
-    git \
+    zlib1g-dev
+     \\
     libboost-system-dev \
     libssl-dev \
     libcurl4-openssl-dev \
@@ -31,6 +32,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     libboost-system1.83.0 \
     libssl3 \
+    zlib1g \
     libcurl4 \
     && rm -rf /var/lib/apt/lists/*
 
