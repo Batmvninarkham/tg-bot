@@ -15,10 +15,12 @@ add_executable(bot
         src/utils/message_util.cpp
         src/utils/permissions.cpp
         src/commands/register.cpp
+        src/web/health_server.cpp
+        src/utils/shutdown.cpp
     )
-
     target_include_directories(bot PRIVATE
             ${Boost_INCLUDE_DIRS}
+             ${PROJECT_SOURCE_DIR}/../extern/cpp-httplib
         )
 
         target_link_libraries(bot

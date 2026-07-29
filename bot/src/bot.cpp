@@ -8,16 +8,46 @@
 #include "./handlers/owner.h"
 #include "./handlers/general.h"
 #include "./commands/register.h"
+#include  "./web/health_server.h"
 using namespace TgBot;
+#include "utils/shutdown.h"
 
-
+#include <csignal>
+void signalHandler(int signal) {
+    running = false;
+}
 int main(){
   std::string token (getenv("TOKEN"));
   TgBot::Bot bot (token);
+std::signal(SIGINT, signalHandler);
+std::signal(SIGTERM, signalHandler);
 registerGeneralHandlers(bot);
 registerModerationHandlers(bot);
 registerOwnerHandlers(bot);
 registerAllCommands(bot);
+
+
+    HealthServer healthServer;
+    healthServer.start();
+
+
+try{
+TgLongPoll longpoll(bot);
+while(running){
+longpoll.start();
+}
+}catch(TgException& e){
+  std::cerr<<e.what()<<std::endl;
+}
+    healthServer.stop();
+    return 0;
+}
+
+
+
+
+
+
 /*
 //grab all messages to the bot 
 bot .getEvents().onAnyMessage([&api](Message::Ptr message){
@@ -44,14 +74,4 @@ event.onCommand("sendphoto",[&api,admin](Message::Ptr message){
 
 
 
-
-try{
-TgLongPoll longpoll(bot);
-while(true){
-longpoll.start();
-}
-}catch(TgException& e){
-  std::cerr<<e.what()<<std::endl;
-}
-}
 
