@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(Boost REQUIRED)
 
-add_subdirectory(../tgbot-cpp-master tgbot-build)
-
+add_subdirectory(../extern/tgbot-cpp tgbot-build)
 add_executable(bot
         src/bot.cpp
         src/handlers/general.cpp

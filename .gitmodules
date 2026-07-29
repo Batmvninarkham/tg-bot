@@ -1,0 +1,3 @@
+[submodule "extern/tgbot-cpp"]
+	path = extern/tgbot-cpp
+	url = https://github.com/Batmvninarkham/tgbot-cpp.git
