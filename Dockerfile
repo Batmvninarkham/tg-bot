@@ -17,8 +17,6 @@ WORKDIR /app
 # Copy the whole project (including the submodule)
 COPY . .
 
-# Ensure submodules exist (harmless if already present)
-RUN git submodule update --init --recursive
 
 # Configure and build
 RUN cmake -S bot -B build
