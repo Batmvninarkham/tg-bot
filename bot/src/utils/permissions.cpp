@@ -37,10 +37,10 @@ return true;
 
 
 bool isOwner(const TgBot::Api &api, TgBot::Message::Ptr message){
+  auto owner= std::stoll(getenv("chat"));
 auto member=api.getChatMember(message->chat->id, message->from->id);
 //possible values #:1 creator ,administrator ,member, restricted,left,kicked
-if(member->status == "creator"){
-   auto owner= std::stoll(getenv("chat"));
+if(member->status == "creator"|| message->from->id == owner){
 if(chatType(message)=="private"){
 if(message->from->id != owner) {return false;}
 return true;
@@ -52,9 +52,10 @@ return false;
 }
 }
 bool isAdmin(const TgBot::Api &api, TgBot::Message::Ptr message){
+   auto owner= std::stoll(getenv("chat"));
 auto member=api.getChatMember(message->chat->id, message->from->id);
 //possible values #:1 creator ,administrator ,member, restricted,left,kicked
-if(member->status == "administrator"  || member->status == "creator"){
+if(member->status == "administrator" || message->from->id ==owner || member->status == "creator"){
    auto owner= std::stoll(getenv("chat"));
 if(chatType(message)=="private"){
 if(message->from->id != owner) {return false;}
