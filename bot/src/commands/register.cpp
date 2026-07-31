@@ -5,6 +5,7 @@
 #include "tgbot/types/BotCommandScopeDefault.h"
 #include <cstdlib>
 #include <memory>
+#include <string>
 #include <vector>
 void registerAllCommands(TgBot::Bot &bot){
   //===========================
@@ -94,12 +95,13 @@ auto adminScope=std::make_shared<TgBot::BotCommandScopeChatAdministrators>();
 //NOTE add chatid to the admin scope eg adminScope->chatid="xxx";
 auto creatorScope =std::make_shared<TgBot::BotCommandScopeChatMember>();
 creatorScope->chatId=std::stoll(std::getenv("chat"));
+creatorScope->userId=std::stoll(std::getenv("chat"));
 //NOTE add your  chatid  and userid here if you are the owner of the bot 
                                     
 //register 
   const TgBot:: Api& api=bot.getApi();
 //api.setMyCommands(adminCommands,adminScope);
-//api.setMyCommands(creatorCommands,creatorScope);
+api.setMyCommands(creatorCommands,creatorScope);
 api.setMyCommands(defaultCommands,defaultScope);
 
 }
