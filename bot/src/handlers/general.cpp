@@ -1,6 +1,10 @@
 #include "general.h"
 #include "tgbot/EventBroadcaster.h"
 #include "tgbot/Api.h"
+#include "tgbot/types/Message.h"
+#include "tgbot/types/ReplyParameters.h"
+#include <memory>
+#include <string>
 void registerGeneralHandlers(TgBot::Bot& bot){
 
 const  TgBot::Api& api =bot.getApi();
@@ -23,6 +27,12 @@ api.sendMessage(message->chat->id, "launch the streamctl webapp to watch your ga
 return;   
 });
 
+event.onCommand("ids",[&api](::TgBot::Message::Ptr message){
+    auto reply=std::make_shared<TgBot::ReplyParameters>();
+    reply->messageId=message->messageId;
+api.sendMessage(message->chat->id, "userid= "+std::to_string(message->from->id)+"chat-id= "+std::to_string(message->chat->id),nullptr,reply);
+
+    });
 
 event.onCommand("dice",[&api](TgBot::Message::Ptr message){
     std:: string emoji;

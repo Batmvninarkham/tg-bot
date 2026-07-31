@@ -3,16 +3,23 @@
 #include "tgbot/EventBroadcaster.h"
 #include "tgbot/types/Message.h"
 #include <sstream>
+#include "../utils/permissions.h"
 void registerOwnerHandlers(TgBot::Bot &bot){
 TgBot::EventBroadcaster& event= bot.getEvents();
 const TgBot::Api& api=bot.getApi();
 
 //remove the bot from the chat
 event.onCommand("leave",[&api](TgBot::Message::Ptr message){
+    if(!isOwner(api, message)){
+return;
+    }
 api.leaveChat(message->chat->id);
     });
 //get the webhook info
 event.onCommand("webhookinfo",[&api](TgBot::Message::Ptr message){
+    if(!isOwner(api, message)){
+return;
+    }
 auto info=api.getWebhookInfo();
 if(info==nullptr){
 api.sendMessage(message->chat->id, "using getUpdates");
@@ -22,6 +29,9 @@ api.sendMessage(message->chat->id, info->url);
         });
 //delete webhook intergration if you would like to go back to Api::getUpdates
 event.onCommand("deleteWebhook",[&api](TgBot::Message::Ptr message){
+    if(!isOwner(api, message)){
+return;
+    }
         std:: istringstream iss(message->text);
         std:: string command;
         bool dropUpdates;

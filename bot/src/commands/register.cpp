@@ -21,6 +21,12 @@ start->description="return the username of the bot";
   start->command="start";
   defaultCommands.push_back(start);
 
+
+auto ids=std::make_shared<TgBot::BotCommand>();
+ids->command="ids";
+ids->description="return the chatids and userid";
+defaultCommands.push_back(ids);
+
 auto dice= std::make_shared<TgBot::BotCommand>();
 dice->command="dice";
   dice->description="combinations dart, football,basketball,dice,bowlball,slotmachine defaults to dice";
@@ -87,7 +93,7 @@ auto defaultScope=std::make_shared<TgBot::BotCommandScopeDefault>();
 auto adminScope=std::make_shared<TgBot::BotCommandScopeChatAdministrators>();
 //NOTE add chatid to the admin scope eg adminScope->chatid="xxx";
 auto creatorScope =std::make_shared<TgBot::BotCommandScopeChatMember>();
-creatorScope->userId=std::stoll(std::getenv("chat"));
+creatorScope->chatId=std::stoll(std::getenv("chat"));
 //NOTE add your  chatid  and userid here if you are the owner of the bot 
                                     
 //register 
